@@ -13,7 +13,11 @@
   },
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "tabs",
+    "http://twitter.com/",
+    "https://twitter.com/",
+    "https://ec2-54-251-166-188.ap-southeast-1.compute.amazonaws.com/"
   ],
   "content_scripts": [
     {
