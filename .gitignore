@@ -6,3 +6,4 @@ frontend/build
 .ipynb_checkpoints/*
 __pycache__/*
 key.pem
+nohup.out

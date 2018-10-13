@@ -27,4 +27,4 @@ def get_user_prediction():
     return jsonify(result)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=443, ssl_context=('cert.pem', 'key.pem'))
+    app.run(host="0.0.0.0", port=443, ssl_context=('/etc/letsencrypt/live/www.ntumods.com/fullchain.pem', '/etc/letsencrypt/live/www.ntumods.com/privkey.pem'))
