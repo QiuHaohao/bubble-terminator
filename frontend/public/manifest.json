@@ -8,16 +8,20 @@
   "manifest_version": 2,
   "version": "0.0.1",
   "browser_action": {
-    "default_popup": "index.html",
-    "default_title": "Poke"
+    "default_title": "Poke",
+    "default_popup": "index.html"
   },
   "permissions": [
     "activeTab"
   ],
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["/static/js/contentScript.js"]
+      "matches": ["*://twitter.com/*"],
+      "css": ["./static/css/app.css"],
+      "js": ["./static/js/contentScript.js"]
     }
-  ]
+  ],
+  "background": {
+    "scripts": ["./static/js/background.js"]
+  }
 }

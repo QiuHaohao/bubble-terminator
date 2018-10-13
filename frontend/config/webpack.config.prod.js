@@ -258,9 +258,9 @@ module.exports = {
         removeEmptyAttributes: true,
         removeStyleLinkTypeAttributes: true,
         keepClosingSlash: true,
-        minifyJS: true,
-        minifyCSS: true,
-        minifyURLs: true
+        minifyJS: false,
+        minifyCSS: false,
+        minifyURLs: false
       }
     }),
     // Makes some environment variables available to the JS code, for example:
