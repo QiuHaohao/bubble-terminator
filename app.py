@@ -16,7 +16,6 @@ def get_predictions():
     result =  { "predictions" : [cl.predict(x) for x in text] }
     return jsonify(result)
 
-
 @app.route('/user',methods=['POST'])
 def get_user_prediction():
     username = request.get_json()['username']
