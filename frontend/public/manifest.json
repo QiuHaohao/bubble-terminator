@@ -18,10 +18,8 @@
     {
       "matches": ["*://twitter.com/*"],
       "css": ["./static/css/app.css"],
-      "js": ["./static/js/contentScript.js"]
+      "js": ["./static/js/contentScript.js"],
+      "run_at": "document_end"
     }
-  ],
-  "background": {
-    "scripts": ["./static/js/background.js"]
-  }
+  ]
 }

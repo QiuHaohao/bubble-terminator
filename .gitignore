@@ -1,2 +1,5 @@
 ENV/*
 .ipynb_checkpoints/
+venv/
+frontend/node_modules
+frontend/build
