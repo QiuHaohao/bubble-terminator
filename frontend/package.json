@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@firebase/app-types": "^0.3.2",
-    "@material-ui/core": "^1.2.1",
     "antd": "^3.10.1",
     "autoprefixer": "7.1.6",
     "axios": "^0.18.0",
@@ -27,8 +25,6 @@
     "eslint-plugin-prettier": "^2.6.2",
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "1.1.5",
-    "firebase": "^5.2.0",
-    "flamelink": "^0.17.1",
     "flow": "^0.2.3",
     "fs-extra": "3.0.1",
     "html-webpack-plugin": "2.29.0",
@@ -71,13 +67,13 @@
   "author": "Liu Mingyu",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb": "^17.0.0",
+    "eslint": "^5.7.0",
+    "eslint-config-airbnb": "^17.1.0",
     "eslint-config-google": "^0.9.1",
-    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-json": "^1.2.1",
-    "eslint-plugin-jsx-a11y": "^6.0.3",
-    "eslint-plugin-react": "^7.10.0"
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1"
   },
   "jest": {
     "collectCoverageFrom": [

@@ -3,24 +3,76 @@ import ReactDOM from "react-dom";
 import * as api from "./api.js";
 
 const startBubbling = () => {
-  const createScoreBox = value => {
+  const active = { value: false };
+  const thresholds = [0, 1];
+  const aggregations = [];
+
+  const getAverageScore = () => {
+    const sum = aggregations.reduce((acc, cur) => cur + acc, 0);
+    return (sum / aggregations.length).toFixed(3);
+  };
+
+  const createProfileScoreBox = () => {
+    const profileContainerDOM = document.querySelector(".ProfileAvatar");
+    const ProfileScoreBox = props => (
+      <div className="score-box">
+        <span>Hello, world!</span>
+      </div>
+    );
+    const boxContainer = document.createElement("div");
+    ReactDOM.render(<ProfileScoreBox />, boxContainer);
+    console.log(profileContainerDOM);
+    profileContainerDOM.appendChild(boxContainer); // TODO: change this
+  };
+
+  const subscribeToChromeStorage = () => {
+    // callback function
+    const f = () => {
+      chrome.storage.sync.get(["thresholds"], function(result) {
+        thresholds[0] = result.thresholds[0];
+        thresholds[1] = result.thresholds[1];
+        console.log("thresholds", thresholds);
+      });
+      chrome.storage.sync.get(["active"], function(result) {
+        active.value = result.active;
+        console.log("active", active);
+        // init();  // necessary, as those React elements don't re-render automatically
+      });
+    };
+    // subscribe
+    chrome.storage.onChanged.addListener(f);
+    f();
+  };
+
+  const createTweetScoreBox = value => {
     // create React component
-    const ScoreBox = () => (
-      <span>{/* Math.random().toFixed(1) */ value}</span>
+    const TweetScoreBox = props => (
+      <div
+        className="score-box"
+        style={{
+          backgroundColor: props.value > 0.5 ? "crimson" : "blue",
+          visibility: props.active ? "visible" : "hidden",
+          opacity:
+            value < thresholds[0]
+              ? 0
+              : value > thresholds[1]
+                ? 1
+                : (value - threshold[0]) / (threshold[1] - thresholds[0])
+        }}
+      >
+        <span>{props.value}</span>
+      </div>
     );
     // create container
     const boxContainer = document.createElement("div");
-    boxContainer.className = "score-box";  // so we can style them
-    if (value > 0.5) {
-      boxContainer.style.backgroundColor = "crimson";
-    } else {
-      boxContainer.style.backgroundColor = "blue";
-    }
     // render React component into element
-    ReactDOM.render(<ScoreBox />, boxContainer);
+    ReactDOM.render(
+      <TweetScoreBox value={value} active={active.value} />,
+      boxContainer
+    );
     // return rendered element
     return boxContainer;
-  }
+  };
 
   // called by observer
   const dispatchAction = mutationsList => {
@@ -34,22 +86,33 @@ const startBubbling = () => {
           return node.className && node.className.includes("stream-item");
         });
       });
-      // flatten DOM list
+    // flatten DOM list
     const flattenedList = unFlattenedList.reduce((acc, cur) => {
       cur.forEach(val => acc.push(val));
       return acc;
     }, []);
     // append score box
     flattenedList.forEach(node => {
-      const tweetText = node.querySelector(".js-tweet-text-container") && node.querySelector(".js-tweet-text-container").innerText.trim().split("\n").join(" ");
+      const tweetText =
+        node.querySelector(".js-tweet-text-container") &&
+        node
+          .querySelector(".js-tweet-text-container")
+          .innerText.trim()
+          .split("\n")
+          .join(" ");
       console.log(tweetText); // DEBUG
       api.getPredictions(tweetText).then(response => {
         const prediction = response.data.predictions[0].toFixed(3);
         console.log("response", prediction); // DEBUG
-        tweetText === "" ? null : node.appendChild(createScoreBox(prediction).cloneNode(true));
+        aggregations.push(prediction);
+        tweetText === ""
+          ? null
+          : node.appendChild(createTweetScoreBox(prediction).cloneNode(true));
       });
     });
-  }
+    // append profile score box
+    createProfileScoreBox();
+  };
 
   // construct observer
   const config = {
@@ -64,22 +127,34 @@ const startBubbling = () => {
 
   // init
   const init = () => {
-    const tweetList = document.querySelectorAll(".js-stream-item, .stream-item");
+    subscribeToChromeStorage();
+    const tweetList = document.querySelectorAll(
+      ".js-stream-item, .stream-item"
+    );
     tweetList.forEach(node => {
-      const tweetText = node.querySelector(".js-tweet-text-container") && node.querySelector(".js-tweet-text-container").innerText.trim().split("\n").join(" ");
+      const tweetText =
+        node.querySelector(".js-tweet-text-container") &&
+        node
+          .querySelector(".js-tweet-text-container")
+          .innerText.trim()
+          .split("\n")
+          .join(" ");
       api.getPredictions(tweetText).then(response => {
         const prediction = response.data.predictions[0].toFixed(3);
+        aggregations.push(prediction);
         console.log("response", prediction); // DEBUG
-        tweetText === "" ? null : node.appendChild(createScoreBox(prediction).cloneNode(true));
+        tweetText === ""
+          ? null
+          : node.appendChild(createTweetScoreBox(prediction).cloneNode(true));
       });
-    })
+    });
+    createProfileScoreBox();
   };
+
   init();
-}
+};
 
-startBubbling();
-
-// polling url change
+// polling to detect url change
 let url = location.href;
 setInterval(() => {
   if (url !== location.href) {
@@ -88,3 +163,6 @@ setInterval(() => {
     url = location.href;
   }
 }, 400);
+
+// start!!!!
+startBubbling();
