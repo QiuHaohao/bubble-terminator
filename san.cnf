@@ -1,0 +1,20 @@
+[ req ]
+default_bits       = 4096 
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+prompt = no
+
+[ req_distinguished_name ]
+countryName                 = SG
+stateOrProvinceName         = Singapore
+localityName               = Singapore
+organizationName           = Dining Philosopher 
+organizationalUnitName	= Dev
+commonName                 = ec2-54-251-166-188.ap-southeast-1.compute.amazonaws.com
+emailAddress		=dev@dining@philo
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1   = ec2-54-251-166-188.ap-southeast-1.compute.amazonaws.com 
