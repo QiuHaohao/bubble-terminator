@@ -1,9 +1,18 @@
-.score-box {
-  display: block;
+.popup {
+  height: 100px;
+  width: 200px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.popup-switch, .popup-slide {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ant-slider {
   width: 100%;
-  height: 20px;
-  background-color: red;
-  z-index: 99999999;
-  position: absolute;
-  bottom: 0;
 }
