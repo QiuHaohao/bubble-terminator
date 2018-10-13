@@ -13,3 +13,22 @@
   box-shadow: 0 2px 10px rgba(0,0,0,.15);
   border-radius: 5px;
 }
+
+.popup {
+  height: 100px;
+  width: 200px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.popup-switch, .popup-slide {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ant-slider {
+  width: 100%;
+}
