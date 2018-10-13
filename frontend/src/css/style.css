@@ -1,3 +1,19 @@
+.score-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 3rem;
+  background-color: black;
+  color: white;
+  z-index: 99999999;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,.15);
+  border-radius: 5px;
+}
+
 .popup {
   height: 100px;
   width: 200px;

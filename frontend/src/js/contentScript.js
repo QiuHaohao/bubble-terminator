@@ -1,39 +1,77 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import * as api from "./api.js";
 
-const Test = () => (
-  <span>Yo Yo</span>
-);
+function showLogs() {
+  console.log("Content script loaded on this page");
+  console.log("Internal version 1.8");
+}
 
-const app = document.createElement("div");
-app.className = "score-box";  // so we can style them
-app.style.display = "block";
+showLogs();
 
-// render those components
-ReactDOM.render(<Test />, app);
+const createScoreBox = () => {
+  // create React component
+  const ScoreBox = () => (
+    <span>{Math.random().toFixed(1)}</span>
+  );
+  // create container
+  const boxContainer = document.createElement("div");
+  boxContainer.className = "score-box";  // so we can style them
+  // render React component into element
+  ReactDOM.render(<ScoreBox />, boxContainer);
+  // return rendered element
+  return boxContainer;
+}
 
-// document.body.appendChild(app);
-// find all tweets
-const tweetList = document.querySelectorAll(".tweet .js-stream-tweet");
-tweetList.forEach((tweetDOM) => {
-  console.log("tweetDOM", tweetDOM);
-  console.log("app", app);
-  tweetDOM.appendChild(app);
-})
+// called by observer
+const dispatchAction = mutationsList => {
+  const boxContainer = createScoreBox();
+  // filter out non-tweets
+  const unFlattenedList = mutationsList
+    .filter(mutationRecord => mutationRecord.type === "childList")
+    .map(mutationRecord => mutationRecord.addedNodes)
+    .map(nodeList => {
+      const nodeArray = Array.from(nodeList);
+      return nodeArray.filter(node => {
+        return node.className && node.className.includes("stream-item");
+      });
+    });
+    // flatten DOM list
+  const flattenedList = unFlattenedList.reduce((acc, cur) => {
+    cur.forEach(val => acc.push(val));
+    return acc;
+  }, []);
+  // append score box
+  flattenedList.forEach(node => node.appendChild(boxContainer.cloneNode(true)));
+  // console.log(flattenedList.map(node => node.innerText.trim().split("\n").join(" ")
+  //   .replace(/\*replies\*retweets\*likesReply\*Retweet\*Like\*Direct message\*/gi, ""))); // DEBUG
+  // append serious score box
+  flattenedList.forEach(node => {
+    const tweetText = node.querySelector(".js-tweet-text-container") && node.querySelector(".js-tweet-text-container").innerText.trim().split("\n").join(" ");
+    console.log(tweetText);
+    const form = new FormData();
+    form.append("text", [tweetText]);
+    api.getPredictions(form).then(response => console.log("response", response));
+  });
+}
 
-// app.style.display = "none";
-// chrome.runtime.onMessage.addListener(
-//    function(request, sender, sendResponse) {
-//       if( request.message === "clicked_browser_action") {
-//         toggle();
-//       }
-//    }
-// );
+// construct observer
+const config = {
+  childList: true,
+  subtree: true
+};
+const observeTarget = document.querySelector(".stream-items");
+const observer = new MutationObserver(dispatchAction);
 
-// function toggle(){
-//    if(app.style.display === "none"){
-//      app.style.display = "block";
-//    }else{
-//      app.style.display = "none";
-//    }
-// }
+// start observing
+observer.observe(observeTarget, config);
+
+// init
+const init = () => {
+  const boxContainer = createScoreBox();
+  const tweetList = document.querySelectorAll(".js-stream-item, .stream-item");
+  tweetList.forEach((tweetDOM) => {
+    tweetDOM.appendChild(boxContainer.cloneNode(true));
+  })
+};
+init();

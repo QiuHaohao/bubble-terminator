@@ -6,7 +6,7 @@ from keras.preprocessing import sequence
 from keras.models import model_from_json
 from six.moves import cPickle
 
-class PoliticalClassifier:
+class PoliticalClassifier():
 	def __init__(
 			self,
 			tokenizerFileName = 'tokenizer_data.pkl',
