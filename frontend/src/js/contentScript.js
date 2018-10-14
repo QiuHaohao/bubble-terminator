@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import { message } from "antd";
 import * as api from "./api.js";
 
+var displayedWarning;
+
 const startBubbling = () => {
   const active = { value: false };
   const thresholds = [0.25, 0.75];
@@ -142,13 +144,16 @@ const startBubbling = () => {
         });
       }
     });
-
-    if (getAverageScore() < thresholds[0]) {
-      message.error("This is too democratic!", 3);
-    } else if (getAverageScore() > thresholds[1]) {
-      message.error("This is too republican!", 3)
-    } else {
-      message.info("You're being watched by Bubble Terminator!!", 3);
+    if (!displayedWarning){
+      if (getAverageScore() < thresholds[0]) {
+        message.error("This is too democratic!", 3);
+        displayedWarning = true;
+      } else if (getAverageScore() > thresholds[1]) {
+        message.error("This is too republican!", 3)
+        displayedWarning = true;
+      } else {
+        message.info("You're being watched by Bubble Terminator!!", 3);
+      }
     }
   };
 
@@ -167,5 +172,6 @@ setInterval(() => {
     // console.log("URL changed!");
     startBubbling();
     url = location.href;
+    displayedWarning = false;
   }
 }, 400);
