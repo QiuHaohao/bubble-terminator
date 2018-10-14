@@ -105,9 +105,11 @@ const startBubbling = () => {
     // warning
     if (!displayedWarning){
       if (getAverageScore() < thresholds[0]) {
-        message.warning("This is too democratic!");
+        message.error("This is too democratic!", 3);
+        displayedWarning = true;
       } else if (getAverageScore() > thresholds[1]) {
-        message.warning("This is too republican!")
+        message.error("This is too republican!", 3);
+        displayedWarning = true;
       }
     }
   };
