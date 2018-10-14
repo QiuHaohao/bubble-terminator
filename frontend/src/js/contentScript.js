@@ -1,28 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { message } from "antd";
 import * as api from "./api.js";
 
 const startBubbling = () => {
   const active = { value: false };
-  const thresholds = [0, 1];
+  const thresholds = [0.25, 0.75];
   const aggregations = [];
 
   const getAverageScore = () => {
-    const sum = aggregations.reduce((acc, cur) => cur + acc, 0);
+    const sum = aggregations.reduce((acc, cur) => parseFloat(cur) + parseFloat(acc), 0);
+    // console.log("sum", sum);
+    // console.log("average", (sum / aggregations.length).toFixed(3));
     return (sum / aggregations.length).toFixed(3);
-  };
-
-  const createProfileScoreBox = () => {
-    const profileContainerDOM = document.querySelector(".ProfileAvatar");
-    const ProfileScoreBox = props => (
-      <div className="score-box">
-        <span>Hello, world!</span>
-      </div>
-    );
-    const boxContainer = document.createElement("div");
-    ReactDOM.render(<ProfileScoreBox />, boxContainer);
-    if (profileContainerDOM && profileContainerDOM !== undefined)
-      profileContainerDOM.appendChild(boxContainer); // TODO: change this
   };
 
   const subscribeToChromeStorage = () => {
@@ -31,12 +21,11 @@ const startBubbling = () => {
       chrome.storage.sync.get(["thresholds"], function(result) {
         thresholds[0] = result.thresholds[0];
         thresholds[1] = result.thresholds[1];
-        console.log("thresholds", thresholds);
+        // console.log("thresholds", thresholds);
       });
       chrome.storage.sync.get(["active"], function(result) {
         active.value = result.active;
-        console.log("active", active);
-        // init();  // necessary, as those React elements don't re-render automatically
+        // console.log("active", active);
       });
     };
     // subscribe
@@ -46,28 +35,28 @@ const startBubbling = () => {
 
   const createTweetScoreBox = value => {
     // create React component
-    const TweetScoreBox = props => (
-      <div
-        className="score-box"
-        style={{
-          backgroundColor: props.value > 0.5 ? "crimson" : "blue",
-          visibility: props.active ? "visible" : "hidden",
-          opacity:
-            value < thresholds[0]
-              ? 0
-              : value > thresholds[1]
-                ? 1
-                : (value - thresholds[0]) / (thresholds[1] - thresholds[0])
-        }}
-      >
-        <span>{props.value}</span>
-      </div>
-    );
+    const TweetScoreBox = props => {
+      return (
+        <div
+          className="score-box"
+          style={{
+            backgroundColor: props.value > thresholds[1] ? "crimson" : "blue",
+            opacity:
+              props.value > thresholds[0] && props.value < thresholds[1]
+                ? 0
+                : props.value > thresholds[1]
+                  ? Math.min(0.3, (props.value - thresholds[1]) / (1 - thresholds[1]))
+                  : Math.min(0.3, (thresholds[0] - props.value) / (thresholds[0])),
+          }}
+        >
+          <span>{props.value < thresholds[0] ? "D" : "R"}</span>
+        </div>
+      )};
     // create container
     const boxContainer = document.createElement("div");
     // render React component into element
     ReactDOM.render(
-      <TweetScoreBox value={value} active={active.value} />,
+      <TweetScoreBox value={parseFloat(value)} active={active.value} />,
       boxContainer
     );
     // return rendered element
@@ -100,20 +89,23 @@ const startBubbling = () => {
           .innerText.trim()
           .split("\n")
           .join(" ");
-      console.log(tweetText); // DEBUG
+      // console.log(tweetText); // DEBUG
       if (tweetText !== null) {
         api.getPredictions(tweetText).then(response => {
           const prediction = response.data.predictions[0].toFixed(3);
-          // console.log("response", prediction); // DEBUG
           const scoreBox = createTweetScoreBox(prediction);
           aggregations.push(prediction);
           node.appendChild(scoreBox);
-          console.log(scoreBox);
+          // console.log(scoreBox);
         });
       }
     });
-    // append profile score box
-    // createProfileScoreBox();
+    // warning
+    if (getAverageScore() < thresholds[0]) {
+      message.warning("This is too democratic!");
+    } else if (getAverageScore() > thresholds[1]) {
+      message.warning("This is too republican!")
+    }
   };
 
   // construct observer
@@ -129,7 +121,6 @@ const startBubbling = () => {
 
   // init
   const init = () => {
-    subscribeToChromeStorage();
     const tweetList = document.querySelectorAll(
       ".js-stream-item, .stream-item"
     );
@@ -144,18 +135,25 @@ const startBubbling = () => {
       if (tweetText !== null) {
         api.getPredictions(tweetText).then(response => {
           const prediction = response.data.predictions[0].toFixed(3);
-          // console.log("response", prediction); // DEBUG
           const scoreBox = createTweetScoreBox(prediction);
           aggregations.push(prediction);
           node.appendChild(scoreBox);
-          console.log(scoreBox);
+          // console.log(scoreBox);
         });
       }
-      // createProfileScoreBox();
     });
 
-    init();
+    if (getAverageScore() < thresholds[0]) {
+      message.error("This is too democratic!", 3);
+    } else if (getAverageScore() > thresholds[1]) {
+      message.error("This is too republican!", 3)
+    } else {
+      message.info("You're being watched by Bubble Terminator!!", 3);
+    }
   };
+
+  subscribeToChromeStorage();
+  init();
 };
 
 // start!!!!
@@ -166,7 +164,7 @@ let url = location.href;
 
 setInterval(() => {
   if (url !== location.href) {
-    console.log("URL changed!");
+    // console.log("URL changed!");
     startBubbling();
     url = location.href;
   }
