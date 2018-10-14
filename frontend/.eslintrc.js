@@ -23,6 +23,8 @@ module.exports = {
     eqeqeq: 'error',
     "no-console": 0,
     "react/prop-types": 0, // this is a bad practice
+    "no-undef": 0,
+    "global": ["chrome"],
 
     // Prettier
     "prettier/prettier": "error",
