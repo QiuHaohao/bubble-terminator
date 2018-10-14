@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { message } from "antd";
 import * as api from "./api.js";
 
-var displayedWarning;
+let displayedWarning = false;
 
 const startBubbling = () => {
   const active = { value: false };
