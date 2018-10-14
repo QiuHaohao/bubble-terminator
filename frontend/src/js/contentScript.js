@@ -103,10 +103,12 @@ const startBubbling = () => {
       }
     });
     // warning
-    if (getAverageScore() < thresholds[0]) {
-      message.warning("This is too democratic!");
-    } else if (getAverageScore() > thresholds[1]) {
-      message.warning("This is too republican!")
+    if (!displayedWarning){
+      if (getAverageScore() < thresholds[0]) {
+        message.warning("This is too democratic!");
+      } else if (getAverageScore() > thresholds[1]) {
+        message.warning("This is too republican!")
+      }
     }
   };
 
