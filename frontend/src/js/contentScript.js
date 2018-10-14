@@ -12,8 +12,6 @@ const startBubbling = () => {
 
   const getAverageScore = () => {
     const sum = aggregations.reduce((acc, cur) => parseFloat(cur) + parseFloat(acc), 0);
-    // console.log("sum", sum);
-    // console.log("average", (sum / aggregations.length).toFixed(3));
     return (sum / aggregations.length).toFixed(3);
   };
 
@@ -23,11 +21,9 @@ const startBubbling = () => {
       chrome.storage.sync.get(["thresholds"], function(result) {
         thresholds[0] = result.thresholds[0];
         thresholds[1] = result.thresholds[1];
-        // console.log("thresholds", thresholds);
       });
       chrome.storage.sync.get(["active"], function(result) {
         active.value = result.active;
-        // console.log("active", active);
       });
     };
     // subscribe
@@ -47,8 +43,8 @@ const startBubbling = () => {
               props.value > thresholds[0] && props.value < thresholds[1]
                 ? 0
                 : props.value > thresholds[1]
-                  ? Math.min(0.3, (props.value - thresholds[1]) / (1 - thresholds[1]))
-                  : Math.min(0.3, (thresholds[0] - props.value) / (thresholds[0])),
+                  ? Math.max(0.3, (props.value - thresholds[1]) / (1 - thresholds[1]))
+                  : Math.max(0.3, (thresholds[0] - props.value) / (thresholds[0])),
           }}
         >
           <span>{props.value < thresholds[0] ? "D" : "R"}</span>
@@ -91,14 +87,12 @@ const startBubbling = () => {
           .innerText.trim()
           .split("\n")
           .join(" ");
-      // console.log(tweetText); // DEBUG
       if (tweetText !== null) {
         api.getPredictions(tweetText).then(response => {
           const prediction = response.data.predictions[0].toFixed(3);
           const scoreBox = createTweetScoreBox(prediction);
           aggregations.push(prediction);
           node.appendChild(scoreBox);
-          // console.log(scoreBox);
         });
       }
     });
@@ -144,7 +138,6 @@ const startBubbling = () => {
           const scoreBox = createTweetScoreBox(prediction);
           aggregations.push(prediction);
           node.appendChild(scoreBox);
-          // console.log(scoreBox);
         });
       }
     });
@@ -173,7 +166,6 @@ let url = location.href;
 
 setInterval(() => {
   if (url !== location.href) {
-    // console.log("URL changed!");
     startBubbling();
     url = location.href;
     displayedWarning = false;
