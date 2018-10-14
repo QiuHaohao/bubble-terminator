@@ -1,6 +1,6 @@
 {
-  "short_name": "Bubble_Terminator",
-  "name": "Poke",
+  "short_name": "BT",
+  "name": "Bubble Terminator",
   "start_url": "./index.html",
   "display": "standalone",
   "theme_color": "#000000",
