@@ -21,8 +21,7 @@ const startBubbling = () => {
     );
     const boxContainer = document.createElement("div");
     ReactDOM.render(<ProfileScoreBox />, boxContainer);
-    console.log(profileContainerDOM);
-    profileContainerDOM.appendChild(boxContainer); // TODO: change this
+    if (profileContainerDOM && profileContainerDOM !== undefined) profileContainerDOM.appendChild(boxContainer); // TODO: change this
   };
 
   const subscribeToChromeStorage = () => {
@@ -57,7 +56,7 @@ const startBubbling = () => {
               ? 0
               : value > thresholds[1]
                 ? 1
-                : (value - threshold[0]) / (threshold[1] - thresholds[0])
+                : (value - thresholds[0]) / (thresholds[1] - thresholds[0])
         }}
       >
         <span>{props.value}</span>
@@ -101,17 +100,19 @@ const startBubbling = () => {
           .split("\n")
           .join(" ");
       console.log(tweetText); // DEBUG
-      api.getPredictions(tweetText).then(response => {
-        const prediction = response.data.predictions[0].toFixed(3);
-        console.log("response", prediction); // DEBUG
-        aggregations.push(prediction);
-        tweetText === ""
-          ? null
-          : node.appendChild(createTweetScoreBox(prediction).cloneNode(true));
-      });
+      if (tweetText !== null) {
+        api.getPredictions(tweetText).then(response => {
+          const prediction = response.data.predictions[0].toFixed(3);
+          // console.log("response", prediction); // DEBUG
+          const scoreBox = createTweetScoreBox(prediction);
+          aggregations.push(prediction);
+          node.appendChild(scoreBox);
+          console.log(scoreBox);
+        });
+      }
     });
     // append profile score box
-    createProfileScoreBox();
+    // createProfileScoreBox();
   };
 
   // construct observer
@@ -139,17 +140,18 @@ const startBubbling = () => {
           .innerText.trim()
           .split("\n")
           .join(" ");
-      api.getPredictions(tweetText).then(response => {
-        const prediction = response.data.predictions[0].toFixed(3);
-        aggregations.push(prediction);
-        console.log("response", prediction); // DEBUG
-        tweetText === ""
-          ? null
-          : node.appendChild(createTweetScoreBox(prediction).cloneNode(true));
-      });
-    });
-    createProfileScoreBox();
-  };
+      if (tweetText !== null) {
+        api.getPredictions(tweetText).then(response => {
+          const prediction = response.data.predictions[0].toFixed(3);
+          // console.log("response", prediction); // DEBUG
+          const scoreBox = createTweetScoreBox(prediction);
+          aggregations.push(prediction);
+          node.appendChild(scoreBox);
+          console.log(scoreBox);
+        });
+      }
+    // createProfileScoreBox();
+  });
 
   init();
 };
