@@ -21,7 +21,8 @@ const startBubbling = () => {
     );
     const boxContainer = document.createElement("div");
     ReactDOM.render(<ProfileScoreBox />, boxContainer);
-    if (profileContainerDOM && profileContainerDOM !== undefined) profileContainerDOM.appendChild(boxContainer); // TODO: change this
+    if (profileContainerDOM && profileContainerDOM !== undefined)
+      profileContainerDOM.appendChild(boxContainer); // TODO: change this
   };
 
   const subscribeToChromeStorage = () => {
@@ -150,14 +151,19 @@ const startBubbling = () => {
           console.log(scoreBox);
         });
       }
-    // createProfileScoreBox();
-  });
+      // createProfileScoreBox();
+    });
 
-  init();
+    init();
+  };
 };
+
+// start!!!!
+startBubbling();
 
 // polling to detect url change
 let url = location.href;
+
 setInterval(() => {
   if (url !== location.href) {
     console.log("URL changed!");
@@ -165,6 +171,3 @@ setInterval(() => {
     url = location.href;
   }
 }, 400);
-
-// start!!!!
-startBubbling();
