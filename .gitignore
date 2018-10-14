@@ -7,3 +7,4 @@ frontend/build
 __pycache__/*
 key.pem
 nohup.out
+.DS_Store
