@@ -9,8 +9,24 @@ virtualenv --python=python3.6 ENV
 pip install -r requirements
 ```
 
-and run the server with nohup
+and run the server with nohup:
 ```
 nohup sudo python3 app.py &
 ```
 
+## Build the Chrome extension
+
+Go to the frontend directory:
+```
+cd frontend
+```
+
+Install dependencies:
+```
+yarn install
+```
+
+Build!
+```
+yarn build
+```
